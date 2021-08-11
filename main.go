@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 )
 
 type Director func(*http.Request)
@@ -95,5 +96,10 @@ func main() {
 		proxy.ServeHTTP(rw, r)
 	})
 
-	log.Fatal(http.ListenAndServe(":9090", nil))
+	port := "9090"
+	if p := os.Getenv("PORT"); p != "" {
+		port = p
+	}
+
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
