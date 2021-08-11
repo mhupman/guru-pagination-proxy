@@ -66,6 +66,11 @@ func UpdateResponse(r *http.Response) error {
 
 	for _, link := range linkheader.Parse(r.Header.Get("Link")) {
 		newResponseObject["link-header-rel-"+link.Rel] = link.URL
+
+		parsedUrl, err := url.Parse(link.URL)
+		if err == nil {
+			newResponseObject["link-header-rel-"+link.Rel+"-token"] = parsedUrl.Query().Get("token")
+		}
 	}
 
 	newResponseObject["link-header-raw-value"] = r.Header.Get("Link")
