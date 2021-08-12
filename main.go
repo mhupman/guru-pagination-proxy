@@ -65,18 +65,12 @@ func UpdateResponse(r *http.Response) error {
 		"results": responsePayload,
 	}
 
-	//nextPageToken := ""
-
 	for _, link := range linkheader.Parse(r.Header.Get("Link")) {
 		newResponseObject["linkHeaderRel"+strings.Replace(link.Rel, "-", "", -1)] = link.URL
 
 		parsedUrl, err := url.Parse(link.URL)
 		if err == nil {
 			newResponseObject["linkHeaderRel"+strings.Replace(link.Rel, "-", "", -1)+"Token"] = parsedUrl.Query().Get("token")
-
-			//if link.Rel == "next-page" {
-			//	nextPageToken = parsedUrl.Query().Get("token")
-			//}
 		}
 	}
 
