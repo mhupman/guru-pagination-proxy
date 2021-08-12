@@ -13,6 +13,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 )
 
 type Director func(*http.Request)
@@ -64,16 +65,22 @@ func UpdateResponse(r *http.Response) error {
 		"results": responsePayload,
 	}
 
+	//nextPageToken := ""
+
 	for _, link := range linkheader.Parse(r.Header.Get("Link")) {
-		newResponseObject["link-header-rel-"+link.Rel] = link.URL
+		newResponseObject["linkHeaderRel"+strings.Replace(link.Rel, "-", "", -1)] = link.URL
 
 		parsedUrl, err := url.Parse(link.URL)
 		if err == nil {
-			newResponseObject["link-header-rel-"+link.Rel+"-token"] = parsedUrl.Query().Get("token")
+			newResponseObject["linkHeaderRel"+strings.Replace(link.Rel, "-", "", -1)+"Token"] = parsedUrl.Query().Get("token")
+
+			//if link.Rel == "next-page" {
+			//	nextPageToken = parsedUrl.Query().Get("token")
+			//}
 		}
 	}
 
-	newResponseObject["link-header-raw-value"] = r.Header.Get("Link")
+	newResponseObject["linkHeaderRawValue"] = r.Header.Get("Link")
 
 	buf := &bytes.Buffer{}
 	err = json.NewEncoder(buf).Encode(newResponseObject)
